@@ -390,7 +390,7 @@ async def chapter_click(client, data, chat_id):
         options = options.output if options else (1 << 30) - 1
 
         caption = '\n'.join([
-            f'{chapter.manga.name} - {chapter.name}',
+            f'{chapter.name} - {chapter.manga.name}',
             f'{chapter.get_url()}'
         ])
 
@@ -405,7 +405,7 @@ async def chapter_click(client, data, chat_id):
             if not chapter.pictures:
                 return await bot.send_message(chat_id, f'There was an error parsing this chapter or chapter is missing' +
                                               f', please check the chapter at the web\n\n{caption}')
-            ch_name = clean(f'{clean(chapter.manga.name, 25)} - {chapter.name}', 45)
+            ch_name = f'{chapter.name} - {chapter.manga.name}'
             pdf, thumb_path = fld2pdf(pictures_folder, ch_name)
             cbz = fld2cbz(pictures_folder, ch_name)
             telegraph_url = await img2tph(chapter, clean(f'{chapter.manga.name} {chapter.name}'))
@@ -432,7 +432,7 @@ async def chapter_click(client, data, chat_id):
 
         chapterFile = await db.get(ChapterFile, chapter.url)
 
-        caption = f'{chapter.manga.name} - {chapter.name}\n'
+        caption = f'{chapter.name} - {chapter.manga.name}\n'
         if options & OutputOptions.Telegraph:
             caption += f'[Read on telegraph]({chapterFile.telegraph_url})\n'
         caption += f'[Read on website]({chapter.get_url()})'
