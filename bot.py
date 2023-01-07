@@ -412,7 +412,7 @@ async def chapter_click(client, data, chat_id):
             if not chapter.pictures:
                 return await bot.send_message(chat_id, f'There was an error parsing this chapter or chapter is missing' +
                                               f', please check the chapter at the web\n\n{caption}')
-            ch_name = clean(f'{chapter.name}', 45 - {clean(chapter.manga.name, 25)})
+            ch_name = clean(f'{chapter.name}, 45 - {clean(chapter.manga.name, 25)}')
             try:
                 pdf, thumb_path = fld2pdf(pictures_folder, ch_name)
             except Exception as e:
