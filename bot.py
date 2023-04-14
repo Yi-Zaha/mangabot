@@ -391,7 +391,7 @@ async def chapter_click(client, data, chat_id):
         options = options.output if options else (1 << 30) - 1
 
         caption = '\n'.join([
-            f'{chapter.name} - {chapter.manga.name}',
+            clean(f'{chapter.name.replace("Chapter", "Ch -")} {clean(chapter.manga.name, 25)}', 45),
             f'{chapter.get_url()}'
         ])
 
