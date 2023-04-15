@@ -391,7 +391,7 @@ async def chapter_click(client, data, chat_id):
         options = options.output if options else (1 << 30) - 1
 
         caption = '\n'.join([
-            f'{chapter.name} - {chapter.manga.name}',
+            f'{chapter.name.replace("Chapter", "Ch -")} {chapter.manga.name}',
             f'{chapter.get_url()}'
         ])
 
@@ -433,7 +433,7 @@ async def chapter_click(client, data, chat_id):
 
         chapterFile = await db.get(ChapterFile, chapter.url)
 
-        caption = f'{chapter.name.replace("Chapter", "Ch -")} {chapter.manga.name}\n'
+        caption = f'{chapter.name.replace("Chapter", "Ch -")}  {chapter.manga.name}\n'
         if options & OutputOptions.Telegraph:
             caption += f'[Read on telegraph]({chapterFile.telegraph_url})\n'
         caption += f'[Read on website]({chapter.get_url()})'
