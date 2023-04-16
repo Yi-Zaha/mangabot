@@ -390,7 +390,7 @@ async def chapter_click(client, data, chat_id):
 
         db = DB()
 
-        chapterFile = await db.get(ChapterFile, chapter.url)
+        chapterFile = None # await db.get(ChapterFile, chapter.url)
         options = await db.get(MangaOutput, str(chat_id))
         options = options.output if options else (1 << 30) - 1
 
@@ -399,7 +399,7 @@ async def chapter_click(client, data, chat_id):
             f'{chapter.get_url()}'
         ])
 
-        download = not chapterFile
+        download = not ChapterFile 
         download = download or options & OutputOptions.PDF and not chapterFile.file_id
         download = download or options & OutputOptions.CBZ and not chapterFile.cbz_id
         download = download or options & OutputOptions.Telegraph and not chapterFile.telegraph_url
@@ -427,7 +427,8 @@ async def chapter_click(client, data, chat_id):
             ])
 
             pdf_m, cbz_m = messages
-
+            
+            """
             if not chapterFile:
                 await db.add(ChapterFile(url=chapter.url, file_id=pdf_m.document.file_id,
                                          file_unique_id=pdf_m.document.file_unique_id, cbz_id=cbz_m.document.file_id,
@@ -438,20 +439,21 @@ async def chapter_click(client, data, chat_id):
                     pdf_m.document.file_id, pdf_m.document.file_unique_id, cbz_m.document.file_id, \
                     cbz_m.document.file_unique_id, telegraph_url
                 await db.add(chapterFile)
+            """
 
             shutil.rmtree(pictures_folder)
 
-        chapterFile = await db.get(ChapterFile, chapter.url)
+        #chapterFile = await db.get(ChapterFile, chapter.url)
 
         caption = f'{chapter.name.replace("Chapter", "CH -")} {chapter.manga.name}\n'
         if options & OutputOptions.Telegraph:
-            caption += f'[Read on telegraph]({chapterFile.telegraph_url})\n'
+            caption += f'[Read on telegraph]({telegraph_url})\n'
         caption += f'[Read on website]({chapter.get_url()})'
         media_docs = []
         if options & OutputOptions.PDF:
-            media_docs.append(InputMediaDocument(chapterFile.file_id))
+            media_docs.append(InputMediaDocument(pdf_m.document.file_id))
         if options & OutputOptions.CBZ:
-            media_docs.append(InputMediaDocument(chapterFile.cbz_id))
+            media_docs.append(InputMediaDocument(cbz_m.document.cbz_id))
 
         if len(media_docs) == 0:
             await retry_on_flood(bot.send_message)(chat_id, caption)
