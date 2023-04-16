@@ -399,7 +399,7 @@ async def chapter_click(client, data, chat_id):
             f'{chapter.get_url()}'
         ])
 
-        download = not ChapterFile 
+        download = not chapterFile 
         download = download or options & OutputOptions.PDF and not chapterFile.file_id
         download = download or options & OutputOptions.CBZ and not chapterFile.cbz_id
         download = download or options & OutputOptions.Telegraph and not chapterFile.telegraph_url
