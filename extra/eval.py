@@ -4,7 +4,7 @@ import traceback
 
 from bot import bot, filters
 
-SUDOS = "5591954930"
+SUDOS = [5591954930]
 
 MAX_MESSAGE_LENGTH = 4096
 
