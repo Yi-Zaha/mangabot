@@ -6,7 +6,9 @@ tgcrypto
 sqlmodel~=0.0.6
 asyncpg
 aiosqlite
-fpdf2~=2.6.0
+fpdf2
 SQLAlchemy~=1.4.31
 psutil~=5.9.0
 telegraph[aio]~=2.1.0
+Pyromod 
+Uvloop
