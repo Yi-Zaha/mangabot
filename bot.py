@@ -453,7 +453,7 @@ async def chapter_click(client, data, chat_id):
         if options & OutputOptions.PDF:
             media_docs.append(InputMediaDocument(pdf_m.document.file_id))
         if options & OutputOptions.CBZ:
-            media_docs.append(InputMediaDocument(cbz_m.document.cbz_id))
+            media_docs.append(InputMediaDocument(cbz_m.document.file_id))
 
         if len(media_docs) == 0:
             await retry_on_flood(bot.send_message)(chat_id, caption)
