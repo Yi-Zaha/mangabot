@@ -13,6 +13,6 @@ async def img2tph(manga_chapter: MangaChapter, name: str):
     content = '\n'.join(lines)
 
     client = Telegraph()
-    await client.create_account('Alpha')
-    page = await client.create_page(name, author_name='AlphaBot', author_url='https://t.me/idkpythonbot', html_content=content)
-    return page['url']
+    await client.create_account('Wizard')
+    page = await client.create_page(name, author_name='@Manga_Downloader_Bot', author_url='https://t.me/Manga_Downloader_Bot', html_content=content)
+    return page['url'].replace('telegra.ph', 'graph.org')
