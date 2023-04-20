@@ -20,6 +20,7 @@ import os
 
 from pyrogram import Client, filters
 from typing import Dict, Tuple, List, TypedDict
+from pyromod import listen
 
 from models.db import DB, ChapterFile, Subscription, LastChapter, MangaName, MangaOutput
 from pagination import Pagination
