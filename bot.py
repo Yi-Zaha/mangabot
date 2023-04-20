@@ -350,22 +350,8 @@ async def manga_click(client, callback: CallbackQuery, pagination: Pagination = 
     full_pages[full_page_key] = []
     for result in results:
         chapters[result.unique()] = result
-        full_pages[full_page_key].append(result.unique()) 
-    
-    all_page_key = f"all_page_{pagination.manga.unique()}"
-    
-    if all_page_key not in all_pages:
-      all_results = pagination.manga.client.chapters_from_page(await pagination.manga.client.get_url(pagination.manga.url), pagination.manga)
-      
-      all_pages[all_page_key] = []
-      for result in all_results:
-        if result.unique() not in all_pages[all_page_key]:
-          all_pages[all_page_key].append(result
-          .unique())
-        
-        if result.unique() not in chapters:
-          chapters[result.unique()] = result
-    
+        full_pages[full_page_key].append(result.unique())
+
     db = DB()
     subs = await db.get(Subscription, (pagination.manga.url, str(callback.from_user.id)))
 
@@ -380,13 +366,11 @@ async def manga_click(client, callback: CallbackQuery, pagination: Pagination = 
     favourites[f"fav_{pagination.manga.unique()}"] = pagination.manga
     favourites[f"unfav_{pagination.manga.unique()}"] = pagination.manga
 
-    full_page = [[InlineKeyboardButton('Full Page', full_page_key)]] 
-    
-    all_page = [[InlineKeyboardButton('All Chapters', all_page_key)]]
+    full_page = [[InlineKeyboardButton('Full Page', full_page_key)]]
 
     buttons = InlineKeyboardMarkup(fav + footer + [
         [InlineKeyboardButton(result.name, result.unique())] for result in results
-    ] + full_page + all_page + footer)
+    ] + full_page + footer)
 
     if pagination.message is None:
         try:
@@ -511,29 +495,6 @@ async def pagination_click(client: Client, callback: CallbackQuery):
     pagination = paginations[pagination_id]
     pagination.page = page
     await manga_click(client, callback, pagination)
-
-async def all_page_click(client: Client, callback: CallbackQuery):
-  chapters_data = all_pages[callback.data]
-  status, options_q = await ask_q(callback.message, "<b>Tell me the chapter files format. You can choose in ↓</b>\n\n→<code>PDF</code>\n→<code>CBZ</code>\n→<code>BOTH</code>")
-  
-  file_option = file_options.get(options_q.text.lower())
-  if not file_option:
-    return await status.edit_text("<b>Invalid File Format, Cancelled the Process.</b>")
-   
-  await add_manga_options(chat_id, file_option)
-  
-  await status.delete()
-  
-  status = await callback.message.reply_text("<b>All Set, Bulk Uploading of all Chapters Started, Will take Time to Upload...</b>")
-  
-  for chapter_data in reversed(chapters_data):
-        try:
-            await chapter_click(client, chapter_data, chat_id)
-        except Exception as e:
-            print(e)
-        await asyncio.sleep(0.5)
-  
-  await status.edit_text("<b>Bulk Upload Completed!</b>")
     
 async def full_page_click(client: Client, callback: CallbackQuery):
     chapters_data = full_pages[callback.data]
@@ -599,9 +560,7 @@ async def on_callback_query(client, callback: CallbackQuery):
     elif callback.data in chapters:
         await chapter_click(client, callback.data, callback.from_user.id)
     elif callback.data in full_pages:
-        await full_page_click(client, callback)
-    elif callback.data in all_pages:
-        await all_page_click(client, callback)        
+        await full_page_click(client, callback)   
     elif callback.data in favourites:
         await favourite_click(client, callback)
     elif is_pagination_data(callback):
