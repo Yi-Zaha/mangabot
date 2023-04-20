@@ -306,6 +306,7 @@ async def plugin_click(client, callback: CallbackQuery):
                            ]))
 
 
+
 async def manga_click(client, callback: CallbackQuery, pagination: Pagination = None):
     if pagination is None:
         pagination = Pagination()
@@ -325,8 +326,22 @@ async def manga_click(client, callback: CallbackQuery, pagination: Pagination = 
     full_pages[full_page_key] = []
     for result in results:
         chapters[result.unique()] = result
-        full_pages[full_page_key].append(result.unique())
-
+        full_pages[full_page_key].append(result.unique()) 
+    
+    all_page_key = f"all_page_{pagination.manga.unique()}"
+    
+    if all_page_key not in all_pages:
+      all_results = pagination.manga.client.chapters_from_page(await pagination.manga.client.get_url(pagination.manga.url), pagination.manga)
+      
+      all_pages[all_page_key] = []
+      for result in all_results:
+        if result.unique() not in all_pages[all_page_key]:
+          all_pages[all_page_key].append(result
+          .unique())
+        
+        if result.unique() not in chapters:
+          chapters[result.unique()] = result
+    
     db = DB()
     subs = await db.get(Subscription, (pagination.manga.url, str(callback.from_user.id)))
 
@@ -341,11 +356,13 @@ async def manga_click(client, callback: CallbackQuery, pagination: Pagination = 
     favourites[f"fav_{pagination.manga.unique()}"] = pagination.manga
     favourites[f"unfav_{pagination.manga.unique()}"] = pagination.manga
 
-    full_page = [[InlineKeyboardButton('Full Page', full_page_key)]]
+    full_page = [[InlineKeyboardButton('Full Page', full_page_key)]] 
+    
+    all_page = [[InlineKeyboardButton('All Chapters', all_page_key)]]
 
     buttons = InlineKeyboardMarkup(fav + footer + [
         [InlineKeyboardButton(result.name, result.unique())] for result in results
-    ] + full_page + footer)
+    ] + full_page + all_page + footer)
 
     if pagination.message is None:
         try:
@@ -473,7 +490,6 @@ async def pagination_click(client: Client, callback: CallbackQuery):
 
 async def all_page_click(client: Client, callback: CallbackQuery):
   chapters_data = all_pages[callback.data]
-  chat_id = user.id
   status, options_q = await ask_q(callback.message, "<b>Tell me the chapter files format. You can choose in ↓</b>\n\n→<code>PDF</code>\n→<code>CBZ</code>\n→<code>BOTH</code>")
   
   file_option = file_options.get(options_q.text.lower())
@@ -560,6 +576,8 @@ async def on_callback_query(client, callback: CallbackQuery):
         await chapter_click(client, callback.data, callback.from_user.id)
     elif callback.data in full_pages:
         await full_page_click(client, callback)
+    elif callback.data in all_pages:
+        await all_page_click(client, callback)        
     elif callback.data in favourites:
         await favourite_click(client, callback)
     elif is_pagination_data(callback):
