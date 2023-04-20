@@ -86,7 +86,7 @@ class OutputOptions(enum.IntEnum):
         return self.value | other
 
 
-disabled = ["[🇬🇧 EN] McReader", "[🇬🇧 EN] MangaDex"]
+disabled = ["[🇬🇧 EN] McReader", "[🇬🇧 EN] MangaHasu", "[🇬🇧 EN] Manhuaplus" ]
 
 plugins = dict()
 for lang, plugin_dict in plugin_dicts.items():
