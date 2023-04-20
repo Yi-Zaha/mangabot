@@ -132,6 +132,18 @@ if dbname:
 else:
     DB()
     
+async def add_manga_options(chat_id, output):
+  db = DB()
+  chat_options = await db.get(MangaOutput, str(chat_id))
+  if chat_options:
+    chat_options.output = output
+  else:
+    chat_options = MangaOutput(user_id=str(chat_id), output=output)
+  try:
+    await db.add(chat_options)
+  except:
+    pass
+
 async def ask_q(msg: Message, text: str, as_reply: bool = False, filters=filters.text) -> Tuple[Message, Message]:
   status = await msg.reply(text, quote=as_reply)
   listener = await bot.listen(msg.chat.id, filters=filters)
