@@ -32,10 +32,12 @@ pdfs: Dict[str, str] = dict()
 paginations: Dict[int, Pagination] = dict()
 queries: Dict[str, Tuple[MangaClient, str]] = dict()
 full_pages: Dict[str, List[str]] = dict()
+all_pages: Dict[str, List[str]] = dict()
 favourites: Dict[str, MangaCard] = dict()
 language_query: Dict[str, Tuple[str, str]] = dict()
 users_in_channel: Dict[int, dt.datetime] = dict()
 locks: Dict[int, asyncio.Lock] = dict()
+file_options: Dict[str, int] = {"pdf": 2147483641, "cbz": 2147483642, "both": 2147483643}
 
 plugin_dicts: Dict[str, Dict[str, MangaClient]] = {
     "🇬🇧 EN": {
