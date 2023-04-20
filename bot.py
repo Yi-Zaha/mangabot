@@ -471,7 +471,30 @@ async def pagination_click(client: Client, callback: CallbackQuery):
     pagination.page = page
     await manga_click(client, callback, pagination)
 
-
+async def all_page_click(client: Client, callback: CallbackQuery):
+  chapters_data = all_pages[callback.data]
+  chat_id = user.id
+  status, options_q = await ask_q(callback.message, "<b>Tell me the chapter files format. You can choose in ↓</b>\n\n→<code>PDF</code>\n→<code>CBZ</code>\n→<code>BOTH</code>")
+  
+  file_option = file_options.get(options_q.text.lower())
+  if not file_option:
+    return await status.edit_text("<b>Invalid File Format, Cancelled the Process.</b>")
+   
+  await add_manga_options(chat_id, file_option)
+  
+  await status.delete()
+  
+  status = await callback.message.reply_text("<b>All Set, Bulk Uploading of all Chapters Started, Will take Time to Upload...</b>")
+  
+  for chapter_data in reversed(chapters_data):
+        try:
+            await chapter_click(client, chapter_data, chat_id)
+        except Exception as e:
+            print(e)
+        await asyncio.sleep(0.5)
+  
+  await status.edit_text("<b>Bulk Upload Completed!</b>")
+    
 async def full_page_click(client: Client, callback: CallbackQuery):
     chapters_data = full_pages[callback.data]
     for chapter_data in reversed(chapters_data):
