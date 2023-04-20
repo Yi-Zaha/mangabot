@@ -130,7 +130,16 @@ if dbname:
     DB(dbname)
 else:
     DB()
-
+    
+async def ask_q(msg: Message, text: str, as_reply: bool = False, filters=filters.text) -> Tuple[Message, Message]:
+  status = await msg.reply(text, quote=as_reply)
+  listener = await bot.listen(msg.chat.id, filters=filters)
+  
+  if listener.text in ["stop", "/quit", "/cancel", "no"]:
+    await status.delete()
+    raise ValueError
+    
+  return status, listener 
 
 @bot.on_message(filters=~(filters.private & filters.incoming))
 async def on_chat_or_channel_message(client: Client, message: Message):
