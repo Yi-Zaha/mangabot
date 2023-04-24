@@ -1,4 +1,4 @@
-git clone https://github.com/tyburd/mangabot/
-cd mangabot
-pip install --quiet -r requirements.txt
-python main.py
+echo "Started..."
+git pull -f -q 
+pip install --quiet -U -r requirements.txt
+python3 main.py
