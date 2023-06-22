@@ -1,3 +1,4 @@
+import re
 from typing import List, AsyncIterable
 from urllib.parse import urlparse, urljoin, quote_plus
 
@@ -8,7 +9,7 @@ from plugins.client import MangaClient, MangaCard, MangaChapter, LastChapter
 
 class KissMangaClient(MangaClient):
 
-    base_url = urlparse("http://kissmanga..nl/")
+    base_url = urlparse("http://kissmanga.nl/")
     search_url = urljoin(base_url.geturl(), "search")
     search_param = 'q'
 
@@ -37,14 +38,12 @@ class KissMangaClient(MangaClient):
     def chapters_from_page(self, page: bytes, manga: MangaCard = None):
         bs = BeautifulSoup(page, "html.parser")
 
-        ul = bs.findAll("div", {"class": "chapter-list"})[1]
-
-        lis = ul.findAll("h4")
+        lis = bs.findAll("li", {"class": "wp-manga-chapter"})
 
         items = [li.findNext('a') for li in lis]
 
         links = [item.get('href') for item in items]
-        texts: List[str] = [item.get('title').strip() for item in items]
+        texts: List[str] = [item.text.strip() for item in items]
 
         texts = [(text if not text.startswith(manga.name) else text[len(manga.name):].strip()) for text in texts]
 
@@ -96,6 +95,12 @@ class KissMangaClient(MangaClient):
         request_url = f'{manga_card.url}'
 
         content = await self.get_url(request_url)
+        
+        mangaID = re.search(rb"var mangaID = '(.*)';", content).group(1).decode()
+        
+        request_url = f"https://mangapure.net/ajax-list-chapter?mangaID={mangaID}"
+        
+        content = await self.get_url(request_url)
 
         return self.chapters_from_page(content, manga_card)[(page - 1) * 20:page * 20]
 
@@ -104,6 +109,12 @@ class KissMangaClient(MangaClient):
 
         request_url = f'{manga_card.url}'
 
+        content = await self.get_url(request_url)
+        
+        mangaID = re.search(rb"var mangaID = '(.*)';", content).group(1).decode()
+        
+        request_url = f"https://mangapure.net/ajax-list-chapter?mangaID={mangaID}"
+        
         content = await self.get_url(request_url)
 
         for chapter in self.chapters_from_page(content, manga_card):
