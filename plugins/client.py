@@ -1,4 +1,4 @@
-import os
+import os, asyncio
 from abc import abstractmethod, ABC
 from dataclasses import dataclass
 from typing import List, AsyncIterable
@@ -100,6 +100,14 @@ class MangaClient(ClientSession, metaclass=LanguageSingleton):
         manga_chapter.pictures = await self.pictures_from_chapters(content, response)
 
         return manga_chapter
+    
+    async def download_picture(self, picture: str, file_name: str, manga_chapter: MangaChapter):
+      for _ in range(5):
+        req = await self.get_picture(manga_chapter, picture, file_name=file_name, cache=True, req_content=False)
+        if str(req.status).startswith('2'):
+          break
+      else:
+        raise ValueError 
 
     async def download_pictures(self, manga_chapter: MangaChapter):
         if not manga_chapter.pictures:
@@ -107,18 +115,22 @@ class MangaClient(ClientSession, metaclass=LanguageSingleton):
 
         folder_name = f'{clean(manga_chapter.manga.name)}/{clean(manga_chapter.name)}'
         i = 0
+        tasks = []
         for picture in manga_chapter.pictures:
-            ext = picture.split('.')[-1]
+            ext = picture.split('.')[-1].split('?')[0]
             file_name = f'{folder_name}/{format(i, "05d")}.{ext}'
-            for _ in range(3):
-                req = await self.get_picture(manga_chapter, picture, file_name=file_name, cache=True,
-                                             req_content=False)
-                if str(req.status).startswith('2'):
-                    break
-            else:
-                raise ValueError
+            task = asyncio.create_task(
+                self.download_picture(picture, file_name, manga_chapter)
+            )
+            tasks.append(task)
             i += 1
-
+            
+        try:
+            await asyncio.gather(*tasks)
+        except BaseException:
+            for task in tasks:
+                await task
+       
         return Path(f'cache/{manga_chapter.client.name}') / folder_name
 
     async def get_picture(self, manga_chapter: MangaChapter, url, *args, **kwargs):
