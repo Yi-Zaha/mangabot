@@ -160,9 +160,6 @@ async def get_manga_thumb(manga: MangaCard, refresh: bool = False) -> str:
         thumb_path = os.path.join(f'cache/{manga.client.name}', file_name)
         if not os.path.exists(thumb_path):
                 return None
-            await manga.client.get_cover(manga, cache=True, file_name=file_name)
-        manga_thumbs = thumb_path
-                return thumb_path
     
 @bot.on_message(filters=~(filters.private & filters.incoming))
 async def on_chat_or_channel_message(client: Client, message: Message):
