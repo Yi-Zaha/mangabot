@@ -87,7 +87,7 @@ class OutputOptions(enum.IntEnum):
         return self.value | other
 
 
-disabled = ["[🇬🇧 EN] McReader", "[🇬🇧 EN] MangaHasu", "[🇬🇧 EN] Manhuaplus" ]
+disabled = ["[🇬🇧 EN] McReader", "[🇬🇧 EN] MangaHasu", "[🇬🇧 EN] Manhuaplus", "[🇬🇧 EN] KissManga", "[🇬🇧 EN] NineManga" ]
 
 plugins = dict()
 for lang, plugin_dict in plugin_dicts.items():
@@ -192,7 +192,7 @@ async def on_start(client: Client, message: Message):
                         "How to use? Just type the name of some manga you want to keep up to date.\n"
                         "\n"
                         "For example:\n"
-                        "`Fire Force`\n"
+                        "`One Piece`\n"
                         "\n"
                         "Check /help for more information.")
 
