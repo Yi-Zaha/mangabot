@@ -158,13 +158,7 @@ async def ask_q(msg: Message, text: str, as_reply: bool = False, filters=filters
 async def get_manga_thumb(manga: MangaCard, refresh: bool = False) -> str:
         file_name = f'pictures/{manga.unique()}.jpg'
         thumb_path = os.path.join(f'cache/{manga.client.name}', file_name)
-        if not os.path.exists(thumb_path):
-            if manga.picture_url == '':
-                return None
-            await manga.client.get_cover(manga, cache=True, file_name=file_name)
-        manga_thumbs[manga.url] = thumb_path
-
-    return thumb_path
+        if not os.path.exists(thumb_path)
     
 @bot.on_message(filters=~(filters.private & filters.incoming))
 async def on_chat_or_channel_message(client: Client, message: Message):
