@@ -98,7 +98,7 @@ for lang, plugin_dict in plugin_dicts.items():
         plugins[identifier] = plugin
 
 # subsPaused = ["[🇪🇸 ES] TMO"]
-subsPaused = disabled + []
+subsPaused = disabled + ["[🇬🇧 EN] McReader", "[🇬🇧 EN] MangaHasu", "[🇬🇧 EN] Manhuaplus", "[🇬🇧 EN] KissManga", "[🇬🇧 EN] NineManga"]
 
 
 def split_list(li):
