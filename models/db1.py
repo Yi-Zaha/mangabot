@@ -21,7 +21,7 @@ class ChapterFileX(SQLModel, table=True):
 
 class DBX(metaclass=LanguageSingleton):
     
-    def __init__(self, dbname: str = 'sqlite:///test.db'):
+    def __init__(self, dbnamex: str = 'sqlite:///test.dbx'):
         if dbnamex.startswith('postgres://'):
             dbnamex = dbnamex.replace('postgres://', 'postgresql+asyncpg://', 1)
         if dbnamex.startswith('sqlite'):
