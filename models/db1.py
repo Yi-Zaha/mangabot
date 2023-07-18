@@ -27,7 +27,7 @@ class DBX(metaclass=LanguageSingleton):
         if dbnamex.startswith('sqlite'):
             dbnamex = dbnamex.replace('sqlite', 'sqlite+aiosqlite', 1)
     
-        self.engine = create_async_engine(dbname)
+        self.engine = create_async_engine(dbnamex)
         
     async def connect(self):
         async with self.engine.begin() as conn:
