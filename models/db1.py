@@ -10,7 +10,7 @@ from tools import LanguageSingleton
 T = TypeVar("T")
 
 
-class ChapterFile(SQLModel, table=True):
+class ChapterFileX(SQLModel, table=True):
     url: str = Field(primary_key=True)
     file_id: str
     file_unique_id: str
