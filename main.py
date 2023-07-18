@@ -6,8 +6,8 @@ uvloop.install()
 
 from pathlib import Path
 from bot import bot, manga_updater
-from models import DB 
-from models import DBX
+from models.db import DB 
+from models.db1 import DBX
 from extras import load_plugin
 
 load_plugin(Path("extras.py"))
