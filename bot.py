@@ -22,8 +22,8 @@ from pyrogram import Client, filters
 from typing import Dict, Tuple, List, TypedDict
 from pyromod import listen
 
-from models.db import DB, Subscription, LastChapter, MangaName
-from models.db1 import DBX, ChapterFileX, MangaOutputX
+from models.db import DB, Subscription, LastChapter, MangaName, MangaOutput
+from models.db1 import DBX, ChapterFileX
 from pagination import Pagination
 from plugins.client import clean
 from tools.flood import retry_on_flood
@@ -141,12 +141,12 @@ else:
     DBX()
     
 async def add_manga_options(chat_id, output):
-  db = DBX()
-  chat_options = await db.get(MangaOutputX, str(chat_id))
+  db = DB()
+  chat_options = await db.get(MangaOutput, str(chat_id))
   if chat_options:
     chat_options.output = output
   else:
-    chat_options = MangaOutputX(user_id=str(chat_id), output=output)
+    chat_options = MangaOutput(user_id=str(chat_id), output=output)
   try:
     await db.add(chat_options)
   except:
@@ -278,8 +278,8 @@ async def on_cancel_command(client: Client, message: Message):
 
 @bot.on_message(filters=filters.command(['options']))
 async def on_options_command(client: Client, message: Message):
-    db = DBX()
-    user_options = await db.get(MangaOutputX, str(message.from_user.id))
+    db = DB()
+    user_options = await db.get(MangaOutput, str(message.from_user.id))
     user_options = user_options.output if user_options else (1 << 30) - 1
     buttons = get_buttons_for_options(user_options)
     return await message.reply("Select the desired output format.", reply_markup=buttons)
@@ -302,10 +302,10 @@ async def on_message(client, message: Message):
 
 
 async def options_click(client, callback: CallbackQuery):
-    db = DBX()
-    user_options = await db.get(MangaOutputX, str(callback.from_user.id))
+    db = DB()
+    user_options = await db.get(MangaOutput, str(callback.from_user.id))
     if not user_options:
-        user_options = MangaOutputX(user_id=str(callback.from_user.id), output=(2 << 30) - 1)
+        user_options = MangaOutput(user_id=str(callback.from_user.id), output=(2 << 30) - 1)
     option = int(callback.data.split('_')[-1])
     user_options.output ^= option
     buttons = get_buttons_for_options(user_options.output)
@@ -428,9 +428,10 @@ async def chapter_click(client, data, chat_id):
         chapter = chapters[data]
 
         db = DBX()
+        db1 = DB()
 
         chapterFile = await db.get(ChapterFileX, chapter.url)
-        options = await db.get(MangaOutputX, str(chat_id))
+        options = await db1.get(MangaOutput, str(chat_id))
         options = options.output if options else (1 << 30) - 1
 
         caption = '\n'.join([
