@@ -19,13 +19,13 @@ class ChapterFile(SQLModel, table=True):
     telegraph_url: str
 
 
-class DB(metaclass=LanguageSingleton):
+class DBX(metaclass=LanguageSingleton):
     
     def __init__(self, dbname: str = 'sqlite:///test.db'):
-        if dbname.startswith('postgres://'):
-            dbname = dbname.replace('postgres://', 'postgresql+asyncpg://', 1)
-        if dbname.startswith('sqlite'):
-            dbname = dbname.replace('sqlite', 'sqlite+aiosqlite', 1)
+        if dbnamex.startswith('postgres://'):
+            dbnamex = dbnamex.replace('postgres://', 'postgresql+asyncpg://', 1)
+        if dbnamex.startswith('sqlite'):
+            dbnamex = dbnamex.replace('sqlite', 'sqlite+aiosqlite', 1)
     
         self.engine = create_async_engine(dbname)
         
@@ -42,10 +42,10 @@ class DB(metaclass=LanguageSingleton):
         async with AsyncSession(self.engine) as session:  # type: AsyncSession
             return await session.get(table, id)
 
-    async def get_all(self, table: Type[T]) -> List[T]:
+    async def erase(self, other: SQLModel):
         async with AsyncSession(self.engine) as session:  # type: AsyncSession
-            statement = select(table)
-            return await session.exec(statement=statement)
+            async with session.begin():
+                await session.delete(other)
 
     async def get_chapter_file_by_id(self, id: str):
         async with AsyncSession(self.engine) as session:  # type: AsyncSession
