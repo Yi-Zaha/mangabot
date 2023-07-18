@@ -305,7 +305,7 @@ async def options_click(client, callback: CallbackQuery):
     db = DBX()
     user_options = await db.get(MangaOutputX, str(callback.from_user.id))
     if not user_options:
-        user_options = MangaOutput(user_id=str(callback.from_user.id), output=(2 << 30) - 1)
+        user_options = MangaOutputX(user_id=str(callback.from_user.id), output=(2 << 30) - 1)
     option = int(callback.data.split('_')[-1])
     user_options.output ^= option
     buttons = get_buttons_for_options(user_options.output)
