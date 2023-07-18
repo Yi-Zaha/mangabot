@@ -18,7 +18,7 @@ class ChapterFileX(SQLModel, table=True):
     cbz_unique_id: str
     telegraph_url: str
 
-class MangaOutput(SQLModel, table=True):
+class MangaOutputX(SQLModel, table=True):
     user_id: str = Field(primary_key=True, regex=r'\d+')
     output: int = Field
 
