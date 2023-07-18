@@ -484,13 +484,13 @@ async def chapter_click(client, data, chat_id):
 
         caption = f'{chapter.name.replace("Chapter", "Ch -")} {chapter.manga.name}\n'
         if options & OutputOptions.Telegraph:
-            caption += f'[Read on telegraph]({telegraph_url})\n'
+            caption += f'[Read on telegraph]({chapterFile.telegraph_url})\n'
         caption += f'[Read on website]({chapter.get_url()})'
         media_docs = []
         if options & OutputOptions.PDF:
-            media_docs.append(InputMediaDocument(pdf_m.document.file_id))
+            media_docs.append(InputMediaDocument(chapterFile.file_id))
         if options & OutputOptions.CBZ:
-            media_docs.append(InputMediaDocument(cbz_m.document.file_id))
+            media_docs.append(InputMediaDocument(chapterFile.cbz_id))
 
         if len(media_docs) == 0:
             await retry_on_flood(bot.send_message)(chat_id, caption)
