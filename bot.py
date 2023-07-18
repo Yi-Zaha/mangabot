@@ -22,7 +22,8 @@ from pyrogram import Client, filters
 from typing import Dict, Tuple, List, TypedDict
 from pyromod import listen
 
-from models.db import DB, ChapterFile, Subscription, LastChapter, MangaName, MangaOutput
+from models.db import DB, Subscription, LastChapter, MangaName, MangaOutput
+from models.db1 import DBX, ChapterFile
 from pagination import Pagination
 from plugins.client import clean
 from tools.flood import retry_on_flood
@@ -132,6 +133,12 @@ if dbname:
     DB(dbname)
 else:
     DB()
+
+dbnamex = env_vars.get('DATABASE_URL_PRIMARY_X') or env_vars.get('DATABASE_URL_X')
+if dbnamex:
+    DBX(dbname)
+else:
+    DBX()
     
 async def add_manga_options(chat_id, output):
   db = DB()
@@ -220,7 +227,7 @@ async def on_refresh(client: Client, message: Message):
     if not (message.reply_to_message and message.reply_to_message.outgoing and
             ((document and document.file_name[-4:].lower() in ['.pdf', '.cbz']) or match)):
         return await message.reply("This command only works when it replies to a manga file that bot sent to you")
-    db = DB()
+    db = DBX()
     if document:
         chapter = await db.get_chapter_file_by_id(document.file_unique_id)
     else:
@@ -420,10 +427,11 @@ async def chapter_click(client, data, chat_id):
 
         chapter = chapters[data]
 
-        db = DB()
+        db = DBX()
+        db1 = DB()
 
-        chapterFile = None # await db.get(ChapterFile, chapter.url)
-        options = await db.get(MangaOutput, str(chat_id))
+        chapterFile = await db.get(ChapterFile, chapter.url)
+        options = await db1.get(MangaOutput, str(chat_id))
         options = options.output if options else (1 << 30) - 1
 
         caption = '\n'.join([
@@ -460,7 +468,6 @@ async def chapter_click(client, data, chat_id):
 
             pdf_m, cbz_m = messages
             
-            """
             if not chapterFile:
                 await db.add(ChapterFile(url=chapter.url, file_id=pdf_m.document.file_id,
                                          file_unique_id=pdf_m.document.file_unique_id, cbz_id=cbz_m.document.file_id,
@@ -471,11 +478,10 @@ async def chapter_click(client, data, chat_id):
                     pdf_m.document.file_id, pdf_m.document.file_unique_id, cbz_m.document.file_id, \
                     cbz_m.document.file_unique_id, telegraph_url
                 await db.add(chapterFile)
-            """
 
             shutil.rmtree(pictures_folder)
 
-        #chapterFile = await db.get(ChapterFile, chapter.url)
+        chapterFile = await db.get(ChapterFile, chapter.url)
 
         caption = f'{chapter.name.replace("Chapter", "Ch -")} {chapter.manga.name}\n'
         if options & OutputOptions.Telegraph:
