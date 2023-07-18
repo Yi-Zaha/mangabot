@@ -136,7 +136,7 @@ else:
 
 dbnamex = env_vars.get('DATABASE_URL_PRIMARY_X') or env_vars.get('DATABASE_URL_X')
 if dbnamex:
-    DBX(dbname)
+    DBX(dbnamex)
 else:
     DBX()
     
