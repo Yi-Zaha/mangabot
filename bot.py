@@ -163,11 +163,15 @@ async def ask_q(msg: Message, text: str, as_reply: bool = False, filters=filters
   return status, listener 
 
 async def get_manga_thumb(manga: MangaCard, refresh: bool = False) -> str:
-        file_name = f'pictures/{manga.unique()}.jpg'
-        thumb_path = os.path.join(f'cache/{manga.client.name}', file_name)
-        if not os.path.exists(thumb_path):
-                return None
-    
+    if manga.picture_url is '':
+        return None
+
+    file_name = f'pictures/{manga.unique()}.jpg'
+    thumb_path = os.path.join(f'cache/{manga.client.name}', file_name)
+    if os.path.exists(thumb_path):
+        return thumb_path
+
+
 @bot.on_message(filters=~(filters.private & filters.incoming))
 async def on_chat_or_channel_message(client: Client, message: Message):
     pass
@@ -401,6 +405,9 @@ async def manga_click(client, callback: CallbackQuery, pagination: Pagination = 
                                            f'{pagination.manga.name}\n'
                                            f'{pagination.manga.get_url()}', reply_markup=buttons)
             pagination.message = message
+        asyncio.ensure_future(
+            message.download(f'./cache/{pagination.manga.client.name}/pictures/{pagination.manga.unique()}.jpg')
+        )
     else:
         await bot.edit_message_reply_markup(
             callback.from_user.id,
@@ -458,6 +465,10 @@ async def chapter_click(client, data, chat_id):
                 return await bot.send_message(chat_id, f'There was an error making the pdf for this chapter. '
                                                        f'Please contact the developer with the name of the manga'
                                                        f' and the chapter number.')
+            
+            if thumbnail := await get_manga_thumb(chapter.manga):
+                thumb_path = thumbnail
+
             cbz = fld2cbz(pictures_folder, ch_name)
             telegraph_url = await img2tph(chapter, clean(f'{chapter.manga.name} {chapter.name}'))
 
